@@ -1,0 +1,72 @@
+/* bossfight.rekosk.dev: a start screen with one button, then the bossfight full screen on black with a label on each
+   side (above / below it on tall screens). Tokens, the .btn pills and the start screen copy the main site
+   (css/base.css, css/buttons.css, css/performance.css). */
+:root{color-scheme:dark;background:#000}
+html,body{height:100%}
+body{margin:0;background:#000;overflow:hidden}
+.rk,.rk *,.rk *::before,.rk *::after{box-sizing:border-box}
+.rk{--or:#fe7700;--or2:#ff9a3d;--ink:#0b0b0b;--coal:#121212;--card:#161616;--gray:#8f8f8f;--mid:#bdb8b1;--fog:#dcd8d2;--white:#f6f3ee;position:relative;height:100%;background:#000;color:var(--fog);font-family:'Poppins',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.rk ::selection{background:var(--or);color:#0b0b0b}
+[hidden]{display:none!important}
+
+/* pills (css/buttons.css) */
+.btn{--mx:0px;--my:0px;position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 28px;border:0;border-radius:999px;font:600 16px/1 'Poppins',sans-serif;text-decoration:none;cursor:pointer;transform:translate(var(--mx),var(--my));transition:transform .4s cubic-bezier(.2,.8,.2,1),color .3s,box-shadow .3s,background .3s}
+.btn:focus-visible{outline:2px dashed var(--or);outline-offset:4px}
+.btn .ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.btn:hover .ico{transform:translateX(4px) rotate(-10deg)}
+.btn-or{background:var(--or);color:#0b0b0b}
+.btn-or::before{content:"";position:absolute;left:var(--hx,50%);top:var(--hy,50%);z-index:-1;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#0b0b0b;transform:scale(0);transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.btn-or:hover{color:var(--or)}
+.btn-or:hover::before{transform:scale(44)}
+.btn-ghost{background:transparent;color:var(--white);box-shadow:inset 0 0 0 2px #383838}
+.btn-ghost:hover{color:var(--or);box-shadow:inset 0 0 0 2px var(--or)}
+
+/* 1. start screen (same look as rekosk.dev/performance/) */
+.gate{position:fixed;inset:0;display:grid;place-items:center;padding:32px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));text-align:center;background:radial-gradient(circle at 50% 40%,rgba(254,119,0,.12),transparent 60%),radial-gradient(rgba(255,255,255,.06) 1px,transparent 1.2px) 0 0/16px 16px,var(--ink);overflow:auto}
+.gate-in{display:flex;flex-direction:column;align-items:center;max-width:560px}
+.gate-logo{width:clamp(84px,22vw,120px);height:auto;margin-bottom:28px;user-select:none;animation:gateLogo .8s cubic-bezier(.34,1.56,.64,1) both,gateFloat 4.5s 1s ease-in-out infinite}
+@keyframes gateLogo{from{scale:0;rotate:-120deg;opacity:0}}
+@keyframes gateFloat{50%{translate:0 -8px;rotate:-4deg}}
+.gate-p{margin:0;font-size:clamp(18px,4.4vw,24px);font-weight:600;line-height:1.5;color:var(--white);text-wrap:balance}
+.gate-go{margin-top:30px;padding:0 30px;font-weight:600}
+.gate-p,.gate-go{animation:gateUp .9s cubic-bezier(.2,.8,.2,1) both}
+.gate-p{animation-delay:.2s}.gate-go{animation-delay:.45s}
+@keyframes gateUp{from{opacity:0;transform:translateY(26px);filter:blur(6px)}}
+.gate-go.in{animation:none} /* lets go of the intro animation so the magnetic translate works */
+.gate-go:active{scale:.94;transition:scale .12s}
+.gate-go.go{animation:gatePop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes gatePop{40%{scale:1.12}}
+.gate.leave .gate-in{opacity:0;scale:.94;filter:blur(6px);transition:opacity .3s .1s,scale .4s .1s cubic-bezier(.2,.8,.2,1),filter .3s .1s}
+
+/* 2. the game: as big as the screen allows, with at least --side on each side for the labels */
+.play{--side:clamp(170px,19vw,340px);--gw:min(calc(100vw - 2 * var(--side)),calc(100vh * 4 / 3));position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) var(--gw) minmax(0,1fr);grid-template-rows:100%;background:#000;animation:playIn .5s ease both}
+@supports (height:100dvh){.play{--gw:min(calc(100vw - 2 * var(--side)),calc(100dvh * 4 / 3))}}
+@keyframes playIn{from{opacity:0}}
+.bf-cell{position:relative;min-width:0;min-height:0}
+.bf-stage{position:absolute;inset:0;display:grid;place-items:center;background:#000;overflow:hidden}
+.bf-stage canvas{display:block;background:#000;image-rendering:pixelated;touch-action:none;outline:none;cursor:default}
+.bf-gone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:16px;text-align:center;animation:playIn .8s ease both}
+.bf-gone-p{margin:0;font:400 clamp(22px,3vw,32px)/1.25 'VT323',ui-monospace,monospace;color:var(--gray)}
+
+.side{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:0;padding:24px clamp(14px,1.6vw,32px);text-align:center;overflow:hidden}
+.side-l{padding-left:max(clamp(14px,1.6vw,32px),env(safe-area-inset-left,0px))}
+.side-r{padding-right:max(clamp(14px,1.6vw,32px),env(safe-area-inset-right,0px))}
+.side p{margin:0;max-width:300px;text-wrap:balance}
+.side-h{font-size:clamp(15px,1.35vw,22px);font-weight:600;line-height:1.35;color:var(--white)}
+.side-p{font-size:clamp(13px,1.05vw,17px);line-height:1.6;color:var(--mid)}
+.side-p b{color:var(--or);font-weight:600} /* the addresses: orange, but plain text (no links) */
+/* the QR code: white card with the site's orange ring, so phones read it easily */
+.qr{display:block;width:clamp(110px,11vw,200px);border-radius:12px;overflow:hidden;box-shadow:0 0 0 2px #000,0 0 0 4px var(--or)}
+.qr-svg{display:block;width:100%;height:auto}
+
+/* tall screens (phones, portrait tablets, 4:3 monitors): the labels go above and below the game */
+@media (max-aspect-ratio:7/5){
+  .play{grid-template-columns:100%;grid-template-rows:auto minmax(0,1fr) auto}
+  .side{padding:max(14px,env(safe-area-inset-top,0px)) 16px 10px;gap:6px}
+  .side-r{flex-direction:row;padding:10px 16px max(14px,env(safe-area-inset-bottom,0px));gap:16px}
+  .side p{max-width:560px}
+  .side-h{font-size:clamp(15px,2.4vw,22px)}
+  .side-p{font-size:clamp(13px,1.9vw,17px)}
+  .qr{width:clamp(84px,min(16vw,14vh),150px)}
+}
+@media (prefers-reduced-motion:reduce){.gate-logo,.gate-p,.gate-go,.play,.bf-gone{animation:none}.gate.leave .gate-in{transition:none}}
