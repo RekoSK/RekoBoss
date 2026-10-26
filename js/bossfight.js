@@ -1,7 +1,7 @@
 /* bossfight.rekosk.dev: the bossfight from rekosk.dev on its own, full screen, with nothing around it.
    An Undertale-style boss fight against Reko's logo. The fight itself is the same code as the main site's
    js/bossfight.js (rekoboss in the About terminal); only the parts around it differ: a start screen with one Continue
-   button (so the browser allows sound), browser fullscreen, M for sound on / off, and no window to move.
+   button (so the browser allows sound), browser fullscreen, sound always on (nothing is saved), and no window to move.
    Everything here is original: the sprites are drawn from pixel maps / the Reko logo pieces, all sounds and music are
    synthesized live with Web Audio (except heart-crack.mp3 / heart-shatter.mp3, which come from the main site).
    The game draws on a 640x480 canvas (the game's own resolution) that scales with the window.
@@ -34,9 +34,7 @@
   /* ---------- sound ----------
      Same rules as the main site: on by default, shared `reko-sound` setting, only after the first click / key,
      silent while the tab is hidden, a master compressor so nothing clips. */
-  const SOUND_KEY = 'reko-sound';
-  let soundOn = true;
-  try { soundOn = localStorage.getItem(SOUND_KEY) !== 'off'; } catch (err) { /* storage blocked */ }
+  const soundOn = true; // always on here: no mute, and nothing is saved to the browser
 
   const sfx = {
     heartCrack: new Audio('assets/sound/heart-crack.mp3'),     // the site's own 8-bit heart crack...
@@ -2083,7 +2081,7 @@
   /* ---------- input ---------- */
   const KEYS = {
     ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
-    KeyZ: 'ok', Enter: 'ok', Space: 'ok', KeyX: 'back', ShiftLeft: 'back', ShiftRight: 'back', Backspace: 'back', KeyM: 'mute'
+    KeyZ: 'ok', Enter: 'ok', Space: 'ok', KeyX: 'back', ShiftLeft: 'back', ShiftRight: 'back', Backspace: 'back'
   };
   function press(a) {
     const inp = G.inp;
@@ -2115,7 +2113,6 @@
     if (!a) return;
     if ((e.code === 'Space' || e.code === 'Enter') && e.target.closest && e.target.closest('button')) return; // let buttons click
     e.preventDefault();
-    if (a === 'mute') { if (!e.repeat) setSound(!soundOn); return; }
     if (!e.repeat) press(a);
     held.add(a);
   });
@@ -2163,16 +2160,6 @@
   const up = (e) => { if (ptr && ptr.id === e.pointerId) { ptr = null; G.drag.hold = false; } };
   cv.addEventListener('pointerup', up);
   cv.addEventListener('pointercancel', up);
-
-  /* ---------- sound ----------
-     No Sound pill here: M switches it on / off (saved in the same `reko-sound` setting as the main site). */
-  function setSound(on) {
-    if (on === soundOn) return;
-    if (!on) au.play('off');
-    soundOn = on;
-    if (on) { au.play('on'); au.music.resume(); } else { au.music.pause(); Object.values(sfx).forEach((a) => a.pause()); }
-    try { localStorage.setItem(SOUND_KEY, on ? 'on' : 'off'); } catch (err) { /* storage blocked */ }
-  }
 
   /* ---------- the start screen ----------
      Browsers only allow sound after a click, so the page starts with one button. Continue unlocks the audio, asks for
